@@ -93,26 +93,26 @@ def missing_fixes_based_on(
     # Select only the relevant fields from df_missing
     df_missing = df_missing[
         [
-            'Commit_datetime_right',
+            'Commit_upstream_hexsha_right',
             'Commit_hexsha_right',
             'Commit_summary_right',
-            'Commit_hexsha_left',
             'Commit_upstream_hexsha_left',
+            'Commit_hexsha_left',
         ]
     ]
     # Rename the selected columns
     df_missing.columns = [
-        'Missing_commit_datetime',
-        'Missing_commit',
+        'Missing_commit_upstream',
+        'Missing_commit_stable',
         'Missing_commit_summary',
-        'Based_on_commit',
         'Based_on_commit_upstream',
+        'Based_on_commit_stable',
     ]
 
     return df_missing
 
 
-def remove_blacklisted(df, blacklist_file, col='Missing_commit'):
+def remove_blacklisted(df, blacklist_file, col='Missing_commit_upstream'):
     blacklist = array_from_blacklist_file(blacklist_file)
     if blacklist:
         df = df[~df[col].str.contains('|'.join(blacklist))]
@@ -120,10 +120,7 @@ def remove_blacklisted(df, blacklist_file, col='Missing_commit'):
 
 
 def output(df, left_name, right_name, outname):
-    # Write the output to file
-    df_to_csv_file(df, outname)
 
-    # Pretty print
     print(
         "[+] %s is missing the below commits based "
         "on commits in %s:" %
@@ -134,11 +131,31 @@ def output(df, left_name, right_name, outname):
         return
 
     df = df.copy()
+
+    # Add column 'Missing_commit', with values form 'Missing_commit_upstream'
+    df['Missing_commit'] = df['Missing_commit_upstream']
+    # For the rows where Missing_commit_upstream value is missing,
+    # use the value from column Missing_commit_stable
+    colname = 'Missing_commit'
+    df.loc[df[colname].isnull(), colname] = df['Missing_commit_stable']
+    # Add column 'Based_on_commit', with values form 'Based_on_commit_upstream'
+    df['Based_on_commit'] = df['Based_on_commit_upstream']
+    # Similarly, if Based_on_commit_upstream value is missing,
+    # use the value from column Based_on_commit_stable
+    colname = 'Based_on_commit'
+    df.loc[df[colname].isnull(), colname] = df['Based_on_commit_stable']
+
+    # Write the output to file
+    df_to_csv_file(df, outname)
+
+    # Select only the columns we want to print
     df = df[[
         'Missing_commit',
         'Missing_commit_summary',
-        'Based_on_commit'
+        'Based_on_commit',
     ]]
+
+    # Truncate the values
     df['Missing_commit'] = df['Missing_commit'].str.slice(0, 12)
     df['Missing_commit_summary'] = df['Missing_commit_summary'].str.slice(0, 64)
     df['Based_on_commit'] = df['Based_on_commit'].str.slice(0, 12)

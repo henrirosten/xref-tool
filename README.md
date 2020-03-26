@@ -55,23 +55,23 @@ $ ./xrefmissing.py v4.19.csv v5.4.csv
 ```
 Missing_commit    Missing_commit_summary                                            Based_on_commit
 ----------------  ----------------------------------------------------------------  -----------------
-db8cd32198d9      IB/hfi1: Don't cancel unused work item                            8c37f7c23c02
-596180c2110c      mmc: sdhci-of-esdhc: re-implement erratum A-009204 workaround     019ca0bf8d91
-b2a0788c52c3      cpu/SMT: Fix x86 link error without CONFIG_SYSFS                  4d166206cf41
-0a56a2e1624a      ASoC: sgtl5000: Fix VDDA and VDDIO comparison                     ec4815460d81
-d2136afb5193      EDAC/ghes: Fix locking and memory barrier issues                  d97e4a6d2b2f
-edaeb1133785      kvm: x86: Host feature SSBD doesn't imply guest feature SPEC_CTR  dbf38b17a892
-185563ec1195      iomap: fix return value of iomap_dio_bio_actor on 32bit systems   807a59723109
-a4e2e221480b      KVM: x86: Remove a spurious export of a static function           6a10f818a9ad
-ce75dd3abbc8      netfilter: nf_tables: autoload modules from the abort path        7ed065bd8a20
-2548a72a6f5c      bpftool: Fix printing incorrect pointer in btf_dump_ptr           5fab87c26f0a
-38b67e60b6b5      tracing: Fix now invalid var_ref_vals assumption in trace action  ce28d664054d
-0e9619ff10ca      sched/cpufreq: Move the cfs_rq_util_change() call to cpufreq_upd  d71744b5c149
+ca9033ba69c7      IB/hfi1: Don't cancel unused work item                            4d43d395fed1
+f667216c5c7c      mmc: sdhci-of-esdhc: re-implement erratum A-009204 workaround     5dd195522562
+dc8d37ed304e      cpu/SMT: Fix x86 link error without CONFIG_SYSFS                  ec527c318036
+e19ecbf105b2      ASoC: sgtl5000: Fix VDDA and VDDIO comparison                     b6319b061ba2
+23f61b9fc5cc      EDAC/ghes: Fix locking and memory barrier issues                  1e72e673b9d1
+396d2e878f92      kvm: x86: Host feature SSBD doesn't imply guest feature SPEC_CTR  0c54914d0c52
+e9f930ac88a8      iomap: fix return value of iomap_dio_bio_actor on 32bit systems   4721a6010990
+24885d1d79e2      KVM: x86: Remove a spurious export of a static function           cbbaa2727aa3
+eb014de4fd41      netfilter: nf_tables: autoload modules from the abort path        ec7470b834fe
+555089fdfc37      bpftool: Fix printing incorrect pointer in btf_dump_ptr           22c349e8db89
+d380dcde9a07      tracing: Fix now invalid var_ref_vals assumption in trace action  8bcebc77e85f
+bef69dd87828      sched/cpufreq: Move the cfs_rq_util_change() call to cpufreq_upd  039ae8bcf7a5
 ```
 
-Output is a table that summarizes the potential missing commits. In the above example, column names 'Missing_commit' and 'Missing_commit_summary' refer the v5.4 commit that appear missing from v4.19. Column 'Based_on_commit' is the v4.19 commit where the corresponding commit in v5.4 was fixed or reverted. In addition to the table to stdout, the script generates a CSV file with more details for the found missing commits.
+Output is a table that summarizes the potential missing commits. In the above example, column names 'Missing_commit' and 'Missing_commit_summary' refer the upstream commit that appear missing from v4.19 based on v5.4. Column 'Based_on_commit' is the upstream commit that was fixed or reverted in v5.4, and that is also included in v4.19. In addition to the table to stdout, the script generates a CSV file with more details for the found missing commits.
 
-Note that the produced list of missing patches requires manual effort to determine if the found missing patches would actually be relevant in the branch specified by CSV1. You may want to use the option `--blacklist` to specify a list of CSV2 commits that should not be applied to branch specified by CSV1. Blacklist file is simply a text file that lists the commit hexshas for the blacklisted CSV2 commits. For instance, if you want to ignore db8cd32198d9 and 596180c2110c when determining the missing commits from v4.19 based on v5.4, you could have the following contents in a text file:
+Note that the produced list of missing patches requires manual effort to determine if the found missing patches would actually be relevant in the branch specified by CSV1. You may want to use the option `--blacklist` to specify a list of upstream commits that should not be applied to branch specified by CSV1. Blacklist file is simply a text file that lists the upstream commit hexshas for the blacklisted commits. For instance, if you want to ignore ca9033ba69c7 and f667216c5c7c when determining the missing commits from v4.19 based on v5.4, you could have the following contents in a text file:
 
 ```
 $ cat blacklist_v5.4-v4.19.txt
@@ -79,8 +79,8 @@ $ cat blacklist_v5.4-v4.19.txt
 # Blacklist can include text too. Only string sequences that
 # look like git commit hexshas ([0-9a-f]{10,40}) are considered
 # blacklist elements:
-db8cd32198d9
-596180c2110c1848fe2ccf885245745658d98079
+f667216c5c7c
+ca9033ba69c7e3477f207df69867b2ea969197c8
 ```
 
 and then run the xrefmissing.py with --blacklist option:
@@ -139,52 +139,49 @@ $ ./find-missing-commits.py --stable ~/linux-stable-rc --other ~/linux-next
 
 Missing_commit    Missing_commit_summary                                            Based_on_commit
 ----------------  ----------------------------------------------------------------  -----------------
-0bcd7762727d      x86/iopl: Make 'struct tss_struct' constant size again            cd923d2b574a
-51bfb1d11d6d      futex: Fix kernel-doc notation warning                            fc3b55ef2c84
-b73b7f48895a      Revert "drm/amd/display: setting the DIG_MODE to the correct val  12d29ebf6baa
-68a33b179466      dma-direct: exclude dma_direct_map_resource from the min_low_pfn  e44850bd4205
-1d8006abaab4      bpf: Fix cgroup ref leak in cgroup_bpf_inherit on out-of-memory   80a332f41858
-317a8d9eb612      drm/amdgpu: remove redundant variable r and redundant return sta  160157552905
-f1ed10264ed6      vti[6]: fix packet tx through bpf_redirect() in XinY cases        c8e04566db7f
-0d1c3530e1bd      net_sched: keep alloc_hash updated after hash allocation          dd8142a6fa52
-3907ccfaec5d      crypto: atmel-aes - Fix CTR counter overflow when multiple fragm  12a15e1c544e
-f053c83ad5c8      Revert "drm/fbdev: Fallback to non tiled mode if all tiles not p  9ed73297980b
-99b79c3900d4      netfilter: xt_hashlimit: unregister proc file before releasing m  782077bff3a6
-211b64e4b5b6      binderfs: use refcount for binder control devices too             f30f3aa5c3b9
+0bcd7762727d      x86/iopl: Make 'struct tss_struct' constant size again            05b042a19443
+51bfb1d11d6d      futex: Fix kernel-doc notation warning                            3ef240eaff36
+b73b7f48895a      Revert "drm/amd/display: setting the DIG_MODE to the correct val  967a3b85bac9
+68a33b179466      dma-direct: exclude dma_direct_map_resource from the min_low_pfn  b12d66278dd6
+1d8006abaab4      bpf: Fix cgroup ref leak in cgroup_bpf_inherit on out-of-memory   e10360f815ca
+317a8d9eb612      drm/amdgpu: remove redundant variable r and redundant return sta  de7b45babd9b
+f1ed10264ed6      vti[6]: fix packet tx through bpf_redirect() in XinY cases        95224166a903
+0d1c3530e1bd      net_sched: keep alloc_hash updated after hash allocation          599be01ee567
+3907ccfaec5d      crypto: atmel-aes - Fix CTR counter overflow when multiple fragm  781a08d9740a
 
-[+] stable-v4.19.csv appears to be missing the below commits based on commits in linux-next_v5.4_pending-fixes.csv:
+[+] stable-v4.19.csv is missing the below commits based on commits in linux-next_v5.4_pending-fixes.csv:
 
 Missing_commit    Missing_commit_summary                                            Based_on_commit
 ----------------  ----------------------------------------------------------------  -----------------
-3e72dfdf8227      ipv4: ensure rcu_read_lock() in cipso_v4_error()                  125bc1e67eee
-cf17a1e3aa1a      ARM: 8942/1: Revert "8857/1: efi: enable CP15 DMB instructions b  478afe341d29
-ca9033ba69c7      IB/hfi1: Don't cancel unused work item                            8c37f7c23c02
-8d82cee2f8aa      pstore: Make pstore_choose_compression() static                   f4bf101be366
-f667216c5c7c      mmc: sdhci-of-esdhc: re-implement erratum A-009204 workaround     019ca0bf8d91
-3b36b13d5e69      ALSA: hda/realtek: Fix pop noise on ALC225                        9cfd6c36759b
-dc8d37ed304e      cpu/SMT: Fix x86 link error without CONFIG_SYSFS                  4d166206cf41
-c05b9d7b9f3e      media: fdp1: Fix R-Car M3-N naming in debug message               f2a4624be8f3
-069e47823fff      bnx2x: Enable Multi-Cos feature.                                  774358df88f7
-fb3c06cfda0d      iwlwifi: fw: make pos static in iwl_sar_get_ewrd_table() loop     80bac45e3ad8
-c034f2aa8622      KVM: VMX: Fix conditions for guest IA32_XSS support               beeeead95b2f
-e19ecbf105b2      ASoC: sgtl5000: Fix VDDA and VDDIO comparison                     ec4815460d81
-1489d1794001      Revert "drm/radeon: Fix EEH during kexec"                         6e03bca91f8e
-e80d89380c5a      docs: admin-guide: Remove threads-max auto-tuning                 7bbe6eefdbb3
-23f61b9fc5cc      EDAC/ghes: Fix locking and memory barrier issues                  d97e4a6d2b2f
-d18580b08b92      drm/i915: make pool objects read-only                             7ce726b61c57
-396d2e878f92      kvm: x86: Host feature SSBD doesn't imply guest feature SPEC_CTR  dbf38b17a892
-11dd34f3eae5      powerpc/pseries: Drop pointless static qualifier in vpa_debugfs_  ee35e01b0f08
-612eb1c3b9e5      Revert "net: bcmgenet: use RGMII loopback for MAC reset"          acd6a29134f0
-e9f930ac88a8      iomap: fix return value of iomap_dio_bio_actor on 32bit systems   807a59723109
-24885d1d79e2      KVM: x86: Remove a spurious export of a static function           6a10f818a9ad
-6fedae3cad8b      ata: brcm: fix reset controller API usage                         46a746f026bc
-eb014de4fd41      netfilter: nf_tables: autoload modules from the abort path        7ed065bd8a20
-555089fdfc37      bpftool: Fix printing incorrect pointer in btf_dump_ptr           5fab87c26f0a
-d380dcde9a07      tracing: Fix now invalid var_ref_vals assumption in trace action  ce28d664054d
-f1ed10264ed6      vti[6]: fix packet tx through bpf_redirect() in XinY cases        011e94777d90
-0d1c3530e1bd      net_sched: keep alloc_hash updated after hash allocation          478c4b2ffd44
-3907ccfaec5d      crypto: atmel-aes - Fix CTR counter overflow when multiple fragm  ede3b2392d52
-bef69dd87828      sched/cpufreq: Move the cfs_rq_util_change() call to cpufreq_upd  d71744b5c149
+01091c496f92      acpi/nfit: improve bounds checking for 'func'                     11189c1089da
+cf17a1e3aa1a      ARM: 8942/1: Revert "8857/1: efi: enable CP15 DMB instructions b  e17b1af96b2a
+ca9033ba69c7      IB/hfi1: Don't cancel unused work item                            4d43d395fed1
+8d82cee2f8aa      pstore: Make pstore_choose_compression() static                   cb095afd4476
+f667216c5c7c      mmc: sdhci-of-esdhc: re-implement erratum A-009204 workaround     5dd195522562
+dc8d37ed304e      cpu/SMT: Fix x86 link error without CONFIG_SYSFS                  ec527c318036
+c05b9d7b9f3e      media: fdp1: Fix R-Car M3-N naming in debug message               4e8c120de926
+069e47823fff      bnx2x: Enable Multi-Cos feature.                                  d1f0b5dce8fd
+fb3c06cfda0d      iwlwifi: fw: make pos static in iwl_sar_get_ewrd_table() loop     ba3224db7803
+dde9f095583b      afs: Fix handling of an abort from a service handler              2067b2b3f484
+c034f2aa8622      KVM: VMX: Fix conditions for guest IA32_XSS support               4d763b168e9c
+e19ecbf105b2      ASoC: sgtl5000: Fix VDDA and VDDIO comparison                     b6319b061ba2
+1489d1794001      Revert "drm/radeon: Fix EEH during kexec"                         6f7fe9a93e6c
+e80d89380c5a      docs: admin-guide: Remove threads-max auto-tuning                 b0f53dbc4bc4
+23f61b9fc5cc      EDAC/ghes: Fix locking and memory barrier issues                  1e72e673b9d1
+d18580b08b92      drm/i915: make pool objects read-only                             4f7af1948abc
+396d2e878f92      kvm: x86: Host feature SSBD doesn't imply guest feature SPEC_CTR  0c54914d0c52
+11dd34f3eae5      powerpc/pseries: Drop pointless static qualifier in vpa_debugfs_  c6c26fb55e8e
+612eb1c3b9e5      Revert "net: bcmgenet: use RGMII loopback for MAC reset"          3a55402c9387
+e9f930ac88a8      iomap: fix return value of iomap_dio_bio_actor on 32bit systems   4721a6010990
+24885d1d79e2      KVM: x86: Remove a spurious export of a static function           cbbaa2727aa3
+6fedae3cad8b      ata: brcm: fix reset controller API usage                         2b2c47d9e1fe
+eb014de4fd41      netfilter: nf_tables: autoload modules from the abort path        ec7470b834fe
+555089fdfc37      bpftool: Fix printing incorrect pointer in btf_dump_ptr           22c349e8db89
+d380dcde9a07      tracing: Fix now invalid var_ref_vals assumption in trace action  8bcebc77e85f
+f1ed10264ed6      vti[6]: fix packet tx through bpf_redirect() in XinY cases        95224166a903
+0d1c3530e1bd      net_sched: keep alloc_hash updated after hash allocation          599be01ee567
+3907ccfaec5d      crypto: atmel-aes - Fix CTR counter overflow when multiple fragm  781a08d9740a
+bef69dd87828      sched/cpufreq: Move the cfs_rq_util_change() call to cpufreq_upd  039ae8bcf7a5
 
 [+] Done, for more details, see: ~/xref-tool/missing_fixes
 ```
