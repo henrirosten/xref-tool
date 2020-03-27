@@ -119,18 +119,9 @@ def remove_blacklisted(df, blacklist_file, col='Missing_commit_upstream'):
     return df
 
 
-def output(df, left_name, right_name, outname):
+def output(dfo, left_name, right_name, outname):
 
-    print(
-        "[+] %s is missing the below commits based "
-        "on commits in %s:" %
-        (os.path.basename(left_name), os.path.basename(right_name)))
-
-    if df.empty:
-        print("No missing fixes")
-        return
-
-    df = df.copy()
+    df = dfo.copy()
 
     # Add column 'Missing_commit', with values form 'Missing_commit_upstream'
     df['Missing_commit'] = df['Missing_commit_upstream']
@@ -145,8 +136,18 @@ def output(df, left_name, right_name, outname):
     colname = 'Based_on_commit'
     df.loc[df[colname].isnull(), colname] = df['Based_on_commit_stable']
 
-    # Write the output to file
-    df_to_csv_file(df, outname)
+    # Write the output to file if it isn't empty
+    if not df.empty:
+        df_to_csv_file(df, outname)
+
+    print(
+        "[+] %s is missing the below commits based "
+        "on commits in %s:" %
+        (os.path.basename(left_name), os.path.basename(right_name)))
+
+    if df.empty:
+        print("No missing fixes")
+        return
 
     # Select only the columns we want to print
     df = df[[
