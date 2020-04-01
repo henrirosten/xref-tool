@@ -186,5 +186,24 @@ bef69dd87828      sched/cpufreq: Move the cfs_rq_util_change() call to cpufreq_u
 [+] Done, for more details, see: ~/xref-tool/missing_fixes
 ```
 
+
+## Contribute
+Any pull requests, suggestions, and error reports are welcome.
+To start development, we recommend using lightweight [virtual environments](https://docs.python.org/3/library/venv.html) by running the following commands:
+```
+$ git clone https://github.com/henrirosten/xref-tool.git
+$ cd xref-tool/
+$ python3 -mvenv venv
+$ source venv/bin/activate
+```
+Next, run `make install-requirements` to set up the virtualenv:
+```
+$ make install-requirements
+```
+Run `make help` to see the list of other make targets. Prior to sending any pull requests, make sure at least the `make pre-push` runs successfully.
+
+To deactivate the virtualenv, run `deactivate` in your shell.
+
+
 ## License
 This project is licensed under the GPL 2.0 license - see the [GPL-2.0-only.txt](LICENSES/GPL-2.0-only.txt) file for details.

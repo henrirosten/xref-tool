@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-2.0-only
 
-gitpython
-pandas
-tabulate
-reuse
+pycodestyle
+pytest
+pytest-cov
